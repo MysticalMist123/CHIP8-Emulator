@@ -1,8 +1,5 @@
 #include<stdio.h>
-#include<stdint.h>
-typedef uint8_t DataByte;
-typedef uint16_t Address; // 12-bit addresses only allowed
-// 12 bit memory
+#include "Memory.h"
 
 DataByte memoryArray[4096];
 
@@ -46,3 +43,4 @@ void Display_mem(){
 	// }
 	// return 0;
 // }
+
