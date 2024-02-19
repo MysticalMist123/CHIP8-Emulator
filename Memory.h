@@ -5,8 +5,6 @@
 typedef uint8_t DataByte;
 typedef uint16_t Address; // 12-bit addresses only allowed
 
-extern DataByte memoryArray[4096];
-
 DataByte read_mem(Address loc);
 void write_mem(Address loc,DataByte val);
 void Display_mem();
