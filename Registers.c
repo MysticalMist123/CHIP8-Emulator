@@ -23,8 +23,7 @@ void set_index_register(Address val){
 }
 
 void increment_PC(){
-	if(PC_register==0xFFF) PC_register=0;
-	else PC_register++;
+	PC_register = (PC_register + 2)%(0x1000);
 }
 
 Address get_PC(){
