@@ -2,6 +2,7 @@
 #include "Memory.h"
 #include "Stack.h"
 #include "Registers.h"
+#include "Timers.h"
 
 int main(){
 	// read_mem(4091);
@@ -18,9 +19,12 @@ int main(){
 	// s_pop();
 	// printf("%d\n",get_s_top());
 
-	printf("%x\n",get_index_register());
-	set_index_register(0xA12);
-	printf("%x\n",get_index_register());
+	// printf("%x\n",get_index_register());
+	// set_index_register(0xA12);
+	// printf("%x\n",get_index_register());
+
+	set_sound_timer(239,3);
+	printf("%d\n",get_sound_timer(100));
 
 	return 0;
 }

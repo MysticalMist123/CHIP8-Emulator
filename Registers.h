@@ -1,6 +1,6 @@
 #ifndef REGISTERS_H_
 #define REGISTERS_H_
-#include "Memory.h"
+#include "CommonUtils.h"
 
 void set_general_register(DataByte val, int index);
 DataByte get_general_register(uint8_t index);
