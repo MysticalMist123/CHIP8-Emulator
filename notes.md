@@ -14,3 +14,4 @@
 
 #Notes
 1. 1 instruction executed in 1 cycle. 700 cycles per second
+2. if something goes wrong regarding the timings, then either, try using time instead of number of instructions to update timers, OR remove the concept of clock cycles (700 hz)
