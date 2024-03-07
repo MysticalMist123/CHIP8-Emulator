@@ -8,5 +8,6 @@ Address get_index_register();
 void set_index_register(Address val);
 void increment_PC();
 Address get_PC();
+void set_PC(Address val);
 
 #endif

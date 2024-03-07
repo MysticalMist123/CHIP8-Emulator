@@ -30,6 +30,9 @@ Address get_PC(){
 	return PC_register;
 }
 
+void set_PC(Address val){
+	PC_register = val;
+}
 // int main(){
 	// printf("%x\n",get_index_register());
 	// set_index_register(0xA12);
