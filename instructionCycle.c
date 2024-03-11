@@ -11,11 +11,13 @@
 int count = 0;
 const int WinWidthPix = 64;
 const int WinHeightPix = 32;
-const int PixSize = 30;
+const int PixSize = 10;
 const int WinWidth = WinWidthPix*PixSize;
 const int WinHeight = WinHeightPix*PixSize;
+uint8_t Screen[32][64];
 
 void startCycle(){
+// NOTE: Pls use a matrix to keep track of display
 	// initiate raylib window
 	InitWindow(WinWidth,WinHeight,"Emulator");
 	
@@ -37,6 +39,11 @@ void startCycle(){
 			case 0x0:
 				switch(SecNibSecByte){
 					case 0x0E0:  // 00E0 (clear screen)
+						for(int i=0;i<WinHeightPix;i++){
+							for(int j=0;j<WinWidthPix;j++){
+								Screen[i][j] = 0;
+							}
+						}
 						BeginDrawing();
 						ClearBackground(OFF);
 						EndDrawing();
@@ -55,8 +62,31 @@ void startCycle(){
 			case 0xA: // set index register
 				set_index_register(SecNibSecByte);
 			break;
-			case 0xD: // draw a pixel
-				
+			case 0xD: // draw
+				DataByte x = get_general_register(SecondNib) % WinWidthPix;	
+				DataByte y = get_general_register(ThirdNib) % WinHeightPix;
+				set_general_register(0,0xF);
+				Address sprite_row_addr = get_index_register();
+				for(int i=0;i<FourthNib;i++){
+					DataByte curr_sprite_row = read_mem(sprite_row_addr+i);
+					if(y+i<WinHeightPix){
+						for(int j=0;j<8;j++){
+							if(x+j<WinWidthPix){
+								uint8_t ScreenPixel = Screen[y+i][x+j];
+								uint8_t SpritePixel = ((curr_sprite_row >> (8-j-1)) & 1);
+								Screen[y+i][x+j] = (ScreenPixel ^ SpritePixel);
+								if((ScreenPixel & SpritePixel)) set_general_register(1,0xF);
+
+								// drawing the pixel at (x+j,y+i)
+								BeginDrawing();
+								DrawRectangle(x+j, y+i, PixSize, PixSize, Screen[y+i][x+j] == 0?OFF:ON);
+								EndDrawing();
+							}
+							else break;
+						}
+					}
+					else break;
+				}
 			break;
 		}
 	}
