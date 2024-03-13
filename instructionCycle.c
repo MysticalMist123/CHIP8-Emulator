@@ -1,13 +1,16 @@
 #include<stdio.h>
+#include<unistd.h>
 #include "Memory.h"
 #include "Registers.h"
 #include "Stack.h"
+#include "Loader.h"
 #include "Timers.h"
 #include "CommonUtils.h"
 #include "raylib.h"
 #define ON WHITE
 #define OFF BLACK
 
+char* filename = "./ch8_files/IBM_logo.ch8";
 int count = 0;
 const int WinWidthPix = 64;
 const int WinHeightPix = 32;
@@ -16,12 +19,23 @@ const int WinWidth = WinWidthPix*PixSize;
 const int WinHeight = WinHeightPix*PixSize;
 uint8_t Screen[32][64];
 
+int getXFromMatrixIndex(int x_index){
+	return x_index*PixSize;
+}
+int getYFromMatrixIndex(int y_index){
+	return y_index*PixSize;
+}
+
 void startCycle(){
 // NOTE: Pls use a matrix to keep track of display
 	// initiate raylib window
 	InitWindow(WinWidth,WinHeight,"Emulator");
 	
 	while(!WindowShouldClose()){ // raylib condition for close window
+		if(get_PC()>0xFFF){
+			break;
+		}
+		// printf("%03x\n",get_PC());
 		// fetch instruction
 		DataByte firstByte = read_mem(get_PC());
 		DataByte secondByte = read_mem(get_PC()+1);
@@ -63,8 +77,8 @@ void startCycle(){
 				set_index_register(SecNibSecByte);
 			break;
 			case 0xD: // draw
-				DataByte x = get_general_register(SecondNib) % WinWidthPix;	
-				DataByte y = get_general_register(ThirdNib) % WinHeightPix;
+				DataByte x = (get_general_register(SecondNib)) % WinWidthPix;	
+				DataByte y = (get_general_register(ThirdNib)) % WinHeightPix;
 				set_general_register(0,0xF);
 				Address sprite_row_addr = get_index_register();
 				for(int i=0;i<FourthNib;i++){
@@ -76,10 +90,17 @@ void startCycle(){
 								uint8_t SpritePixel = ((curr_sprite_row >> (8-j-1)) & 1);
 								Screen[y+i][x+j] = (ScreenPixel ^ SpritePixel);
 								if((ScreenPixel & SpritePixel)) set_general_register(1,0xF);
+								// if(ScreenPixel==1 && SpritePixel==1){
+									// Screen[y+i][x+j] = 0;
+									// set_general_register(1,0xF);
+								// }
+								// else if(SpritePixel==1 && ScreenPixel==0){
+									// Screen[y+i][x+j] = 1;
+								// }
 
 								// drawing the pixel at (x+j,y+i)
 								BeginDrawing();
-								DrawRectangle(x+j, y+i, PixSize, PixSize, Screen[y+i][x+j] == 0?OFF:ON);
+								DrawRectangle(getXFromMatrixIndex(x+j), getYFromMatrixIndex(y+i), PixSize, PixSize, Screen[y+i][x+j] == 0?OFF:ON);
 								EndDrawing();
 							}
 							else break;
@@ -89,6 +110,8 @@ void startCycle(){
 				}
 			break;
 		}
+		count++;
+		usleep(1000000/FREQ);		
 	}
 	// close raylib window
 	CloseWindow();
@@ -96,6 +119,7 @@ void startCycle(){
 
 int main(){
 	// load CHIP8 instructions in memory
+	load(filename);
 	startCycle();
 	return 0;
 }

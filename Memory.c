@@ -12,8 +12,8 @@ void write_mem(Address loc,DataByte val){
 }
 
 void Display_mem(){
-	for(int i=0;i<4096;i++){
-		printf("\n%x (%d) has %x (%d)\n",i,i,memoryArray[i],memoryArray[i]);
+	for(int i=0x199;i<0x400;i++){
+		printf("\n%03x (%d) has %02x (%d)\n",i,i,memoryArray[i],memoryArray[i]);
 	}
 }
 
