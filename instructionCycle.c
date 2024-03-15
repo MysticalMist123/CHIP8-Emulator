@@ -10,7 +10,7 @@
 #define ON WHITE
 #define OFF BLACK
 
-char* filename = "./ch8_files/IBM_logo.ch8";
+char* filename = "./ch8_files/chip8-logo.ch8";
 int count = 0;
 const int WinWidthPix = 64;
 const int WinHeightPix = 32;
@@ -30,8 +30,8 @@ void startCycle(){
 // NOTE: Pls use a matrix to keep track of display
 	// initiate raylib window
 	InitWindow(WinWidth,WinHeight,"Emulator");
-	
-	while(!WindowShouldClose()){ // raylib condition for close window
+	SetTargetFPS(60);
+	while(1){
 		if(get_PC()>0xFFF){
 			break;
 		}
@@ -77,6 +77,7 @@ void startCycle(){
 				set_index_register(SecNibSecByte);
 			break;
 			case 0xD: // draw
+				BeginDrawing();
 				DataByte x = (get_general_register(SecondNib)) % WinWidthPix;	
 				DataByte y = (get_general_register(ThirdNib)) % WinHeightPix;
 				set_general_register(0,0xF);
@@ -99,19 +100,28 @@ void startCycle(){
 								// }
 
 								// drawing the pixel at (x+j,y+i)
-								BeginDrawing();
 								DrawRectangle(getXFromMatrixIndex(x+j), getYFromMatrixIndex(y+i), PixSize, PixSize, Screen[y+i][x+j] == 0?OFF:ON);
-								EndDrawing();
 							}
 							else break;
 						}
 					}
 					else break;
 				}
+				EndDrawing();
 			break;
 		}
+		// for(int  i=0;i<WinHeightPix;i++){
+			// for(int j=0;j<WinWidthPix;j++){
+				// // printf("%d ",Screen[i][j]);
+				// BeginDrawing();
+				// DrawRectangle(getXFromMatrixIndex(j), getYFromMatrixIndex(i), PixSize, PixSize, Screen[i][j] == 0?OFF:ON);
+				// EndDrawing();
+			// }
+			// // printf("\n");
+		// }
+		// printf("\n");
 		count++;
-		usleep(1000000/FREQ);		
+		usleep(1000000/FREQ);
 	}
 	// close raylib window
 	CloseWindow();
