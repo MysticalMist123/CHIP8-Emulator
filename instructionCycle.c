@@ -10,7 +10,7 @@
 #define ON WHITE
 #define OFF BLACK
 
-char* filename = "./ch8_files/chip8-logo.ch8";
+char* filename = "./ch8_files/IBM_logo.ch8";
 int count = 0;
 const int WinWidthPix = 64;
 const int WinHeightPix = 32;
