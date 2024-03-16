@@ -1,5 +1,7 @@
 #include<stdio.h>
 #include<unistd.h>
+#include<stdlib.h>
+#include<time.h>
 #include "Memory.h"
 #include "Registers.h"
 #include "Stack.h"
@@ -7,11 +9,12 @@
 #include "Timers.h"
 #include "CommonUtils.h"
 #include "raylib.h"
+#include "keyBindings.h"
 #define ON WHITE
 #define OFF BLACK
 
 char* filename = "./ch8_files/IBM_logo.ch8";
-int count = 0;
+// int count = 0;
 const int WinWidthPix = 64;
 const int WinHeightPix = 32;
 const int PixSize = 10;
@@ -62,19 +65,85 @@ void startCycle(){
 						ClearBackground(OFF);
 						EndDrawing();
 					break;
+					case 0x0EE:
+						set_PC(s_pop());
+					break;
 				}
 			break;
 			case 0x1:
 				set_PC(SecNibSecByte);  // 1NNN (jump)
+			break;
+			case 0x2:
+				s_push(get_PC());
+				set_PC(SecNibSecByte);
 			break;	
+			case 0x3:
+				if(get_general_register(SecondNib)==secondByte) increment_PC();
+			break;
+			case 0x4:
+				if(get_general_register(SecondNib)!=secondByte) increment_PC();				
+			break;
+			case 0x5:
+				if(get_general_register(SecondNib)==get_general_register(ThirdNib)) increment_PC();
+			break;
 			case 0x6:
 				set_general_register(secondByte,SecondNib);  // 6XNN (set register)
 			break;
 			case 0x7:  // 7XNN (add to register)
 				set_general_register(get_general_register(SecondNib)+secondByte,SecondNib);
 			break;
+			case 0x8:
+				int X = get_general_register(SecondNib);
+				int Y = get_general_register(ThirdNib);
+				switch(FourthNib){
+					case 0x0:
+						set_general_register(Y,SecondNib);
+					break;
+					case 0x1:
+						set_general_register((X|Y),SecondNib);
+					break;
+					case 0x2:
+						set_general_register((X&Y),SecondNib);						
+					break;
+					case 0x3:
+						set_general_register((X^Y),SecondNib);
+					break;
+					case 0x4:
+						if(X+Y>0xFF) set_general_register(1,0xF);
+						else set_general_register(0,0xF);
+						set_general_register(X+Y,SecondNib);
+					break;
+					case 0x5: 
+						if(X>Y) set_general_register(1,0xF);
+						else if(Y>X && X-Y<0) set_general_register(0,0xF);
+						set_general_register(X-Y,SecondNib);
+					break;
+					case 0x6: // CHIP-48 version
+						set_general_register((X&1),0xF); // for COSMAC-VIP, replace X with Y
+						set_general_register((X>>1),SecondNib); // for COSMAC-VIP, replace X with Y
+					break;
+					case 0x7:
+						if(Y>X) set_general_register(1,0xF);
+						else if(X>Y && Y-X<0) set_general_register(0,0xF);
+						set_general_register(Y-X,SecondNib);
+					break;
+					case 0xE: // CHIP-48 version
+						set_general_register(((X>>7)&1),0xF); // for COSMAC-VIP, replace X with Y
+						set_general_register((X<<1),SecondNib); // for COSMAC-VIP, replace X with Y
+					break;
+				}
+			break;
+			case 0x9:
+				if(get_general_register(SecondNib)!=get_general_register(ThirdNib)) increment_PC();				
+			break;
 			case 0xA: // set index register
 				set_index_register(SecNibSecByte);
+			break;
+			case 0xB: // CHIP-48 version
+				set_PC(SecNibSecByte+get_general_register(SecondNib));
+			break;
+			case 0xC:
+				set_general_register(((rand()%(secondByte)) & secondByte),SecondNib);
 			break;
 			case 0xD: // draw
 				BeginDrawing();
@@ -109,6 +178,15 @@ void startCycle(){
 				}
 				EndDrawing();
 			break;
+			case 0xE:
+				switch(secondByte){
+					case 0x9E:
+						
+					break;
+					case 0xA1:
+					break;
+				}
+			break;
 		}
 		// for(int  i=0;i<WinHeightPix;i++){
 			// for(int j=0;j<WinWidthPix;j++){
@@ -120,7 +198,7 @@ void startCycle(){
 			// // printf("\n");
 		// }
 		// printf("\n");
-		count++;
+		// count++;
 		usleep(1000000/FREQ);
 	}
 	// close raylib window
@@ -129,6 +207,7 @@ void startCycle(){
 
 int main(){
 	// load CHIP8 instructions in memory
+	srand((unsigned int)time(NULL));
 	load(filename);
 	startCycle();
 	return 0;
