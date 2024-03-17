@@ -1,7 +1,7 @@
 This is my first Emulator, so I might have made some rookie mistakes. Hope it doesn't bother you too much. :)
 
 - Language: C
-- Display: raylib
+- Display: Raylib
 - System: Ubuntu 22.04.3 LTS x86_64
 
 ## Setup
