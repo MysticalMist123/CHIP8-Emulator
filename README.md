@@ -10,7 +10,7 @@ This is my first Emulator, so I might have made some rookie mistakes. Hope it do
 3. Go to instructionCycle.c file, and change the filename (on line 17), to the ROM to be executed.
 
 ## Running the emulator
-Run the below commands:
+Run the below commands:  
 '''
 
 ./compile.sh  
