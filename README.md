@@ -13,7 +13,7 @@ This is my first Emulator, so I might have made some rookie mistakes. Hope it do
 Run the below commands:
 '''
 
-./compile.sh
+./compile.sh  
 ./test
 
 '''
