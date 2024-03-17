@@ -1,8 +1,22 @@
 #include<stdio.h>
 #include "Memory.h"
 #include "Registers.h"
+#include "fonts.h"
 
 void load(char* filename){
+
+	// loading fonts
+	Address faddr = FONT_ADDR;
+	for(uint8_t i=0x0;i<=0xF;i++){
+		DataByte farr[5];
+		getFontData(i,farr);
+		for(int j=0;j<5;j++){
+			write_mem(faddr,farr[j]);
+			faddr++;
+		}
+	}
+
+	// loading program
 	FILE *file = fopen(filename, "rb");
     if (!file) {
         perror("Failed to open file");

@@ -10,10 +10,11 @@
 #include "CommonUtils.h"
 #include "raylib.h"
 #include "keyBindings.h"
+// #include "fonts.h"
 #define ON WHITE
 #define OFF BLACK
 
-char* filename = "./ch8_files/IBM_logo.ch8";
+char* filename = "./ch8_files/Pong.ch8";
 // int count = 0;
 const int WinWidthPix = 64;
 const int WinHeightPix = 32;
@@ -181,10 +182,56 @@ void startCycle(){
 			case 0xE:
 				switch(secondByte){
 					case 0x9E:
-						
+						int key = toKey(get_general_register(SecondNib));
+						if(IsKeyDown(key)) increment_PC();
 					break;
 					case 0xA1:
+						key = toKey(get_general_register(SecondNib));
+						if(IsKeyUp(key)) increment_PC(); // if problematic, use !isKeyDown
 					break;
+				}
+			break;
+			case 0xF:
+				switch(secondByte){
+					case 0x07:
+						set_general_register(get_delay_timer(),SecondNib);
+					break;
+					case 0x15:
+						set_delay_timer(get_general_register(SecondNib));
+					break;
+					case 0x18:
+						set_sound_timer(get_general_register(SecondNib));
+					break;
+					case 0x1E:
+						if(get_index_register()+get_general_register(SecondNib)>0xFFF) set_general_register(1,0xF);
+						set_index_register(get_index_register()+get_general_register(SecondNib));
+					break;
+					case 0x0A:
+						int k = GetKeyPressed();
+						if(k){
+							set_general_register(toCh8Key(k),SecondNib);
+						}
+						else set_PC(get_PC()-2);
+					break;
+					case 0x29:
+						set_index_register(FONT_ADDR + 5*(get_general_register(SecondNib)));
+					break;
+					case 0x33:
+						uint8_t val = get_general_register(SecondNib);
+						write_mem(get_index_register()+2,val%10);
+						write_mem(get_index_register()+1,(val/10)%10);
+						write_mem(get_index_register(),val/100);
+					break;
+					case 0x55: // CHIP-48 implementation
+						for(int i=0;i<=SecondNib;i++){
+							write_mem(get_index_register()+i,get_general_register(i));
+						}
+					break;
+					case 0x65: // CHIP-48 implementation
+						for(int i=0;i<=SecondNib;i++){
+							set_general_register(read_mem(get_index_register()+i),i);
+						}
+					break;					
 				}
 			break;
 		}

@@ -3,6 +3,7 @@
 
 #include<stdio.h>
 #include "raylib.h"
+#include<stdint.h>
 
 // NOTE: raylib uses US keyboard layout
 // you can change the keybindings by refering the below enum from raylib.h. 
@@ -126,7 +127,7 @@ typedef enum {
 } KeyboardKey;
 */
 
-uint8_t getKeyBinding(int in_key){
+uint8_t toCh8Key(int in_key){
 	uint8_t ch8_key;
 	switch(in_key){
 		case KEY_ONE:
@@ -177,8 +178,69 @@ uint8_t getKeyBinding(int in_key){
 		case KEY_V:
 			ch8_key = 0xF; // F
 		break;
+		default:
+		return 0;
 	}
 	return ch8_key;
 }
+
+int toKey(uint8_t in_key){
+	int key;
+	switch(in_key){
+		case 0x1:
+			key = KEY_ONE; // 1
+		break;
+		case 0x2:
+			key = KEY_TWO; // 2
+		break;
+		case 0x3:
+			key = KEY_THREE; // 3
+		break;
+		case 0xC:
+			key = KEY_FOUR; // C
+		break;
+		case 0x4:
+			key = KEY_Q; // 4
+		break;
+		case 0x5:
+			key = KEY_W; // 5
+		break;
+		case 0x6:
+			key = KEY_E; // 6
+		break;
+		case 0xD:
+			key = KEY_R; // D
+		break;
+		case 0x7:
+			key = KEY_A; // 7
+		break;
+		case 0x8:
+			key = KEY_S; // 8
+		break;
+		case 0x9:
+			key = KEY_D; // 9
+		break;
+		case 0xE:
+			key = KEY_F; // E
+		break;
+		case 0xA:
+			key = KEY_Z; // A
+		break;
+		case 0x0:
+			key = KEY_X; // 0
+		break;
+		case 0xB:
+			key = KEY_C; // B
+		break;
+		case 0xF:
+			key = KEY_V; // F
+		break;
+		default:
+		return 0;
+	}
+	return key;
+}
+
+
 
 #endif
