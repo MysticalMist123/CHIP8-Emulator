@@ -12,8 +12,6 @@ This is my first Emulator, so I might have made some rookie mistakes. Hope it do
 ## Running the emulator
 Run the below commands:  
 ```
-
 ./compile.sh  
 ./test
-
 ```
